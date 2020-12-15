@@ -12,6 +12,11 @@ var allSprites sprite.SpriteGroup
 var Width int
 var Height int
 
+const (
+	LEFT = iota
+	RIGHT
+)
+
 const DogCostume1 = `
       dd
      ddBBd
@@ -128,23 +133,28 @@ func NewSmoke() *Smoke {
 		Visible: true},
 		TimeOut: 1,
 	}
-	surf := sprite.NewSurfaceFromString(SmokeCostume1, true)
+	s.Init()
 
-	yOff := 10
-	bigSurf := sprite.NewSurface(Width*2, surf.Height+yOff, true)
+	s.RegisterEvent("resizeScreen", func() {
+		surf := sprite.NewSurfaceFromString(SmokeCostume1, true)
 
-	// fill top part w/ silver
-	for y := 0; y < yOff; y++ {
-		for x := 0; x < bigSurf.Width; x++ {
-			bigSurf.Blocks[y][x] = 'g'
+		yOff := 10
+		bigSurf := sprite.NewSurface(Width*2, surf.Height+yOff, true)
+
+		// fill top part w/ silver
+		for y := 0; y < yOff; y++ {
+			for x := 0; x < bigSurf.Width; x++ {
+				bigSurf.Blocks[y][x] = 'g'
+			}
 		}
-	}
 
-	for cnt := 0; cnt < Width*2 / surf.Width; cnt++ {
-		bigSurf.Blit(surf, cnt*surf.Width, yOff)
-	}
+		for cnt := 0; cnt < Width*2 / surf.Width; cnt++ {
+			bigSurf.Blit(surf, cnt*surf.Width, yOff)
+		}
 
-	s.BlockCostumes = append(s.BlockCostumes, &bigSurf)
+		s.BlockCostumes = []*sprite.Surface{&bigSurf}
+	})
+
 	return s
 }
 
@@ -159,7 +169,7 @@ func (s *Smoke) Update() {
 	}
 }
 
-func NewFire() *Fire {
+func NewFire(side int) *Fire {
 	f := &Fire{BaseSprite: sprite.BaseSprite{
 		X: 0,
 		Y: 0,
@@ -183,6 +193,10 @@ func NewFire() *Fire {
 	})
 
 	f.RegisterEvent("resizeScreen", func() {
+		if side == RIGHT {
+			f.X = Width/2 + 25
+		}
+
 		f.buf = make([][]int, Height+1)
 
 		for cnt := range f.buf {
@@ -276,9 +290,8 @@ func main() {
 	t := NewTable()
 	s := NewSmoke()
 	text := NewText()
-	f1 := NewFire()
-	f2 := NewFire()
-	f2.X = Width/2 + 25
+	f1 := NewFire(LEFT)
+	f2 := NewFire(RIGHT)
 	allSprites.Sprites = append(allSprites.Sprites, d)
 	allSprites.Sprites = append(allSprites.Sprites, text)
 	allSprites.Sprites = append(allSprites.Sprites, t)
