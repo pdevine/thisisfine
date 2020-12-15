@@ -11,10 +11,12 @@ RUN CGO_ENABLED=0 go build -a -ldflags '-extldflags "-static"' -o thisisfine tif
 
 FROM scratch AS release-linux
 COPY --from=builder /project/thisisfine /thisisfine
+ENV TERM="xterm-256color"
 ENTRYPOINT ["/thisisfine"]
 
 FROM mcr.microsoft.com/windows/nanoserver:1809 AS release-windows
 COPY --from=builder /project/thisisfine /thisisfine.exe
+ENV TERM="xterm-256color"
 ENTRYPOINT ["\\thisisfine.exe"]
 
 FROM release-$TARGETOS
