@@ -107,7 +107,7 @@ type Text struct {
 func NewDog() *Dog {
 	d := &Dog{BaseSprite: sprite.BaseSprite{
 		Visible: true},
-		TimeOut: 150,
+		TimeOut: 100,
 	}
 	d.Init()
 
