@@ -381,7 +381,7 @@ func main() {
 		}
 	}()
 
-	r := NewRoom()
+	//r := NewRoom()
 	d := NewDog()
 	t := NewTable()
 	s := NewSmoke()
@@ -390,7 +390,7 @@ func main() {
 	f2 := NewFire(RIGHT)
 	f3 := NewFire(BACKLEFT)
 	f4 := NewFire(BACKRIGHT)
-	allSprites.Sprites = append(allSprites.Sprites, r)
+	//allSprites.Sprites = append(allSprites.Sprites, r)
 	allSprites.Sprites = append(allSprites.Sprites, f3)
 	allSprites.Sprites = append(allSprites.Sprites, f4)
 	allSprites.Sprites = append(allSprites.Sprites, d)
