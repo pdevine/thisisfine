@@ -15,6 +15,8 @@ var Height int
 const (
 	LEFT = iota
 	RIGHT
+	BACKLEFT
+	BACKRIGHT
 )
 
 const DogCostume1 = `
@@ -53,6 +55,12 @@ ddddwwddddddddddddddd
   d                d
   d                d`
 
+const BubbleCostumeBottom = `wwwwwwwww
+   wwwww
+    www
+   ww
+  w`
+
 const SmokeCostume1 = `gggggggggggggggggggggggggggggggggGGGgggggg
 ggggggggggggggggggggggggggggggGGGGGGGGgggg
 gggggggggggggggggGGgggGgggGGGGGGGGGGGGGGGg
@@ -66,6 +74,12 @@ GGGGGGGGGGGGGGGG   GGG
     GGGG`
 
 type Dog struct {
+	sprite.BaseSprite
+	Timer   int
+	TimeOut int
+}
+
+type Room struct {
 	sprite.BaseSprite
 }
 
@@ -93,6 +107,7 @@ type Text struct {
 func NewDog() *Dog {
 	d := &Dog{BaseSprite: sprite.BaseSprite{
 		Visible: true},
+		TimeOut: 150,
 	}
 	d.Init()
 
@@ -107,9 +122,36 @@ func NewDog() *Dog {
 		}
 	})
 
-	surf := sprite.NewSurfaceFromString(DogCostume1, false)
+	surf := sprite.NewSurfaceFromString(DogCostume1, true)
 	d.BlockCostumes = append(d.BlockCostumes, &surf)
 	return d
+}
+
+func (d *Dog) Update() {
+	d.Timer++
+	if d.Timer == d.TimeOut {
+		allSprites.TriggerEvent("saythisisfine")
+	}
+}
+
+func NewRoom() *Room {
+	r := &Room{BaseSprite: sprite.BaseSprite{
+		Visible: true},
+	}
+	r.Init()
+
+	r.RegisterEvent("resizeScreen", func() {
+		surf := sprite.NewSurface(Width, 34, false)
+		surf.Line(0, surf.Height-1, 30, surf.Height-1, 'X')
+		surf.Line(30, surf.Height-1, 30, 2, 'X')
+		surf.Line(30, 2, 50, 0, 'X')
+		surf.Line(50, 0, 50, surf.Height-1, 'X')
+		surf.Line(50, surf.Height-1, surf.Width-1, surf.Height-1, 'X')
+		r.BlockCostumes = []*sprite.Surface{&surf}
+
+		r.Y = Height/2 - surf.Height/2
+	})
+	return r
 }
 
 func NewTable() *Table {
@@ -120,7 +162,7 @@ func NewTable() *Table {
 
 	t.RegisterEvent("resizeScreen", func() {
 		t.X = Width/2 + 10
-		t.Y = Height/2 + 24
+		t.Y = Height/2 + 22
 	})
 
 	surf := sprite.NewSurfaceFromString(TableCostume1, false)
@@ -178,10 +220,14 @@ func NewFire(side int) *Fire {
 	}
 	f.Init()
 
+	if side == BACKLEFT || side == BACKRIGHT {
+		f.Points = 10
+	}
+
 	f.RegisterEvent("flamesHigher", func() {
 		f.Points -= 1
-		if f.Points == 0 {
-			f.Points = 1
+		if f.Points == 3 {
+			f.Points = 4
 		}
 	})
 
@@ -193,12 +239,22 @@ func NewFire(side int) *Fire {
 	})
 
 	f.RegisterEvent("resizeScreen", func() {
-		if side == RIGHT {
+		switch side {
+		case LEFT:
+			f.X = 0
+			f.Y = 0
+		case RIGHT:
 			f.X = Width/2 + 25
+			f.Y = 0
+		case BACKLEFT:
+			f.X = 0
+			f.Y = -Height/2 + 20
+		case BACKRIGHT:
+			f.X = Width/2
+			f.Y = -Height/2 + 20
 		}
 
 		f.buf = make([][]int, Height+1)
-
 		for cnt := range f.buf {
 			f.buf[cnt] = make([]int, Width/2+1)
 		}
@@ -217,7 +273,14 @@ func (f *Fire) Update() {
 	surf := sprite.NewSurface(Width/2, Height, true)
 	for h := 0; h < Height; h++ {
 		for w := 0; w < Width/2; w++ {
-			f.buf[h][w] += f.buf[h][w+1]
+			if rand.Intn(2) == 0 {
+				if w > 0 {
+					f.buf[h][w] += f.buf[h][w-1]
+				}
+			} else {
+				f.buf[h][w] += f.buf[h][w+1]
+			}
+
 			f.buf[h][w] += f.buf[h+1][w]
 			f.buf[h][w] += f.buf[h+1][w+1]
 			f.buf[h][w] /= 4
@@ -236,15 +299,47 @@ func (f *Fire) Update() {
 
 func NewText() *Text {
 	t := &Text{BaseSprite: sprite.BaseSprite{
-		X: 20,
+		X: Width/2,
 		Y: 30,
-		Visible: true},
+		Visible: false},
 		font: sprite.NewPakuFont(),
 	}
 	t.Init()
 
-	surf := sprite.NewSurfaceFromString(t.font.BuildString("This is fine."), false)
-        t.BlockCostumes = append(t.BlockCostumes, &surf)
+	t.RegisterEvent("resizeScreen", func() {
+		t.X = Width/2
+		if Width/2 % 2 != 0 {
+			t.X++
+		}
+		t.Y = Height/2 - 20
+		if Height/2 % 2 != 0 {
+			t.Y++
+		}
+	})
+
+	w := 70
+	h := 20
+
+	bgSurf := sprite.NewSurface(w, h+6, true)
+	for y := 1; y < h-1; y++ {
+		for x := 0; x < bgSurf.Width; x++ {
+			bgSurf.Blocks[y][x] = 'w'
+		}
+	}
+
+	surf := sprite.NewSurfaceFromString(t.font.BuildString("This is fine."), true)
+	bb := sprite.NewSurfaceFromString(BubbleCostumeBottom, true)
+
+	bgSurf.Line(2, 0, w-2, 0, 'w')
+	bgSurf.Line(2, h-1, w-2, h-1, 'w')
+	bgSurf.Blit(surf, w/2-surf.Width/2, h/2-surf.Height/2)
+	bgSurf.Blit(bb, 12, bgSurf.Height-bb.Height)
+
+        t.BlockCostumes = append(t.BlockCostumes, &bgSurf)
+
+	t.RegisterEvent("saythisisfine", func() {
+		t.Visible = true
+	})
 
 	return t
 }
@@ -286,18 +381,24 @@ func main() {
 		}
 	}()
 
+	r := NewRoom()
 	d := NewDog()
 	t := NewTable()
 	s := NewSmoke()
 	text := NewText()
 	f1 := NewFire(LEFT)
 	f2 := NewFire(RIGHT)
+	f3 := NewFire(BACKLEFT)
+	f4 := NewFire(BACKRIGHT)
+	allSprites.Sprites = append(allSprites.Sprites, r)
+	allSprites.Sprites = append(allSprites.Sprites, f3)
+	allSprites.Sprites = append(allSprites.Sprites, f4)
 	allSprites.Sprites = append(allSprites.Sprites, d)
-	allSprites.Sprites = append(allSprites.Sprites, text)
 	allSprites.Sprites = append(allSprites.Sprites, t)
 	allSprites.Sprites = append(allSprites.Sprites, s)
 	allSprites.Sprites = append(allSprites.Sprites, f1)
 	allSprites.Sprites = append(allSprites.Sprites, f2)
+	allSprites.Sprites = append(allSprites.Sprites, text)
 
 mainloop:
 	for {
