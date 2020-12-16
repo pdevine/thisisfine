@@ -407,7 +407,7 @@ mainloop:
 		select {
 		case ev := <-eventQueue:
 			if ev.Type == tm.EventKey {
-				if ev.Key == tm.KeyEsc {
+				if ev.Key == tm.KeyCtrlC || ev.Key == tm.KeyEsc || ev.Ch == 'q' {
 					break mainloop
 				}
 				if ev.Key == tm.KeyArrowUp {
