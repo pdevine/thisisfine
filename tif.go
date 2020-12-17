@@ -221,7 +221,7 @@ func NewFire(side int) *Fire {
 	f.Init()
 
 	if side == BACKLEFT || side == BACKRIGHT {
-		f.Points = 10
+		f.Points = 7
 	}
 
 	f.RegisterEvent("flamesHigher", func() {

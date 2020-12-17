@@ -52,11 +52,3 @@ To build a single image in Linux:
 Q: Why does this look like crap on my Mac?<br>
 A: Use iTerm2 instead of macOS's built-in Terminal app. Terminal screws up all of the line spacing.
 
-
-Q: How can I make this work with Docker on Windows?<br>
-A: It's complicated. Cross compilation for Windows works with `Dockerfile.cross`, however the `buildx`
-   GitHub Action doesn't seem to support Windows. You can try and rebuild with the cross compilation
-   Dockerfile, but you'll probably need to change the golang image to not use the smaller alpine variant
-   if you're not building on a linux machine. Or you could just use Linux.
-
-
