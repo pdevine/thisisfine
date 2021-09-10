@@ -1,6 +1,7 @@
 package main
 
 import (
+	"sync"
 	"time"
 	"math/rand"
 
@@ -90,6 +91,7 @@ type Table struct {
 type Fire struct {
 	sprite.BaseSprite
 	Points int
+	mu sync.Mutex
 	buf [][]int
 }
 
@@ -239,6 +241,13 @@ func NewFire(side int) *Fire {
 	})
 
 	f.RegisterEvent("resizeScreen", func() {
+		f.mu.Lock()
+		f.buf = make([][]int, Height+1)
+		for cnt := range f.buf {
+			f.buf[cnt] = make([]int, Width/2+1)
+		}
+		f.mu.Unlock()
+
 		switch side {
 		case LEFT:
 			f.X = 0
@@ -254,11 +263,6 @@ func NewFire(side int) *Fire {
 			f.Y = -Height/2 + 20
 		}
 
-		f.buf = make([][]int, Height+1)
-		for cnt := range f.buf {
-			f.buf[cnt] = make([]int, Width/2+1)
-		}
-
 		surf := sprite.NewSurface(Width/2, Height, true)
 		f.BlockCostumes = []*sprite.Surface{&surf}
 	})
@@ -267,6 +271,12 @@ func NewFire(side int) *Fire {
 }
 
 func (f *Fire) Update() {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	// Screen hasn't properly initialized, so don't bother updating
+	if len(f.buf) < Height || len(f.buf[Height-1]) < Width/2 {
+		return
+	}
 	for cnt := 0; cnt < int(Width/2 / f.Points); cnt++ {
 		f.buf[Height-1][rand.Intn(Width/2)] = 65
 	}

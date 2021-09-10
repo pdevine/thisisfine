@@ -1,8 +1,8 @@
-FROM --platform=$BUILDPLATFORM golang:1.15.3-alpine3.12 AS builder
-RUN apk add --no-cache git
-RUN go get github.com/pdevine/go-asciisprite
+FROM --platform=$BUILDPLATFORM golang:alpine3.14 AS builder
 WORKDIR /project
-COPY *.go ./
+COPY tif.go .
+COPY go.* ./
+RUN go mod tidy
 
 ARG TARGETOS
 ARG TARGETARCH

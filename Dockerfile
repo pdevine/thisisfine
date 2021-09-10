@@ -1,8 +1,7 @@
-FROM golang:alpine3.12
+FROM golang:alpine3.14
 WORKDIR /project
 COPY tif.go .
-RUN apk add --no-cache git
-RUN go get github.com/pdevine/go-asciisprite
+COPY go.* ./
 RUN CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' -o thisisfine tif.go
 
 FROM scratch
