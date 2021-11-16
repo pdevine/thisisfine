@@ -369,6 +369,9 @@ func setPalette() {
 }
 
 func main() {
+	// XXX - Wait a bit until the terminal is properly initialized
+	time.Sleep(500 * time.Millisecond)
+
 	err := tm.Init()
 	if err != nil {
 		panic(err)
