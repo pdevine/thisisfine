@@ -429,6 +429,11 @@ mainloop:
 					allSprites.TriggerEvent("flamesLower")
 				}
 			} else if ev.Type == tm.EventResize {
+				// Don't try to initialize anything if the terminal isn't ready -- another
+				// EventResize will happen once the terminal is properly initialized
+				if ev.Width == 0 || ev.Height == 0 {
+					continue
+				}
 				Width = ev.Width*2
 				Height = ev.Height*2
 				allSprites.Init(Width, Height, true)
