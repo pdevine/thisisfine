@@ -1,9 +1,10 @@
 package main
 
 import (
+	"fmt"
+	"math/rand"
 	"sync"
 	"time"
-	"math/rand"
 
 	sprite "github.com/pdevine/go-asciisprite"
 	tm "github.com/pdevine/go-asciisprite/termbox"
@@ -374,6 +375,7 @@ func main() {
 
 	err := tm.Init()
 	if err != nil {
+		fmt.Printf("No terminal was detected. If this is in a docker container, use `docker run -it`\n")
 		panic(err)
 	}
 	defer tm.Close()
