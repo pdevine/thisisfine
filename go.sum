@@ -6,8 +6,8 @@ github.com/lucasb-eyer/go-colorful v1.0.3 h1:QIbQXiugsb+q10B+MI+7DI1oQLdmnep86tW
 github.com/lucasb-eyer/go-colorful v1.0.3/go.mod h1:R4dSotOR9KMtayYi1e77YzuveK+i7ruzyGqttikkLy0=
 github.com/mattn/go-runewidth v0.0.10 h1:CoZ3S2P7pvtP45xOtBw+/mDL2z0RKI576gSkzRRpdGg=
 github.com/mattn/go-runewidth v0.0.10/go.mod h1:RAqKPSqVFrSLVXbA8x7dzmKdmGzieGRCM46jaSJTDAk=
-github.com/pdevine/go-asciisprite v0.2.0 h1:C1e5t+14Fy+M7OwTlLupPZVfbQRIG3o0YFvPEOZf2ts=
-github.com/pdevine/go-asciisprite v0.2.0/go.mod h1:riCKeMIRq5KWRbS1E6YrUKotHqVP42Twb4+gVnWhwUU=
+github.com/pdevine/go-asciisprite v0.2.1 h1:UNdRxVdF2VkzumDcCL7W6XP50NciqpJVQ5pmI5Srd20=
+github.com/pdevine/go-asciisprite v0.2.1/go.mod h1:riCKeMIRq5KWRbS1E6YrUKotHqVP42Twb4+gVnWhwUU=
 github.com/rivo/uniseg v0.1.0 h1:+2KBaVoUmb9XzDsrx/Ct0W/EYOSFf/nWTauy++DprtY=
 github.com/rivo/uniseg v0.1.0/go.mod h1:J6wj4VEh+S6ZtnVlnTBMWIodfgj8LQOQFoIToxlJtxc=
 golang.org/x/sys v0.48.0 h1:bbX/i/6MgT9BVLM9RT1thmxL04yeTAhbEz4SyadbXoo=
