@@ -1,8 +1,7 @@
-FROM golang:alpine3.14
+FROM golang:alpine
 WORKDIR /project
 COPY tif.go .
 COPY go.* ./
-RUN go mod tidy
 RUN CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' -o thisisfine tif.go
 
 FROM scratch

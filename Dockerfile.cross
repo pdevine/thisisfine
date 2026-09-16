@@ -1,8 +1,7 @@
-FROM --platform=$BUILDPLATFORM golang:alpine3.14 AS builder
+FROM --platform=$BUILDPLATFORM golang:alpine AS builder
 WORKDIR /project
 COPY tif.go .
 COPY go.* ./
-RUN go mod tidy
 
 ARG TARGETOS
 ARG TARGETARCH
